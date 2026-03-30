@@ -5,7 +5,7 @@
  * Logout button wired to AuthContext.
  */
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../modules/auth/auth.context';
 
 export default function Navbar({ title = 'Dashboard' }) {
   const { user, logout } = useAuth();

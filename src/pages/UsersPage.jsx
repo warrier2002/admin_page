@@ -1,38 +1,18 @@
-import { useState, useEffect } from 'react';
-import api from '../api/axios';
+import { useState }       from 'react';
+import { useAuth }        from '../modules/auth/auth.context';
+import { usePermission }  from '../core/rbac/usePermission';
+import { useUsers }       from '../modules/users/users.hooks';
+import { usersService }   from '../modules/users/users.service';
 
-const MOCK_USERS = [
-  { id: 1, name: 'Alex Thompson',   email: 'alex@acme.io',    role: 'super_admin', status: 'Active',   lastLogin: '2 min ago'  },
-  { id: 2, name: 'Jordan Lee',      email: 'jordan@acme.io',  role: 'admin',       status: 'Active',   lastLogin: '1 hr ago'   },
-  { id: 3, name: 'Sam Rivera',      email: 'sam@acme.io',     role: 'user',        status: 'Active',   lastLogin: '3 hrs ago'  },
-  { id: 4, name: 'Marcus Aurelius', email: 'marcus@acme.io',  role: 'admin',       status: 'Pending',  lastLogin: 'Never'      },
-  { id: 5, name: 'Elena Vasquez',   email: 'elena@acme.io',   role: 'user',        status: 'Inactive', lastLogin: '2 days ago' },
-];
-
-const RoleBadge = ({ role }) => (
-  <span className={`role-badge role-badge--${role}`}>{role.replace('_', ' ')}</span>
-);
-
-const StatusBadge = ({ status }) => (
-  <span className={`status-badge status-badge--${status.toLowerCase()}`}>{status}</span>
-);
+const RoleBadge   = ({ role })   => <span className={`role-badge role-badge--${role}`}>{role.replace('_', ' ')}</span>;
+const StatusBadge = ({ status }) => <span className={`status-badge status-badge--${status.toLowerCase()}`}>{status}</span>;
 
 export default function UsersPage() {
-  const [users,   setUsers]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search,  setSearch]  = useState('');
+  const { can }                                          = usePermission();
+  const { users, loading, removeUser }                   = useUsers();
+  const [search, setSearch]                              = useState('');
 
-  useEffect(() => {
-    api.get('/users')
-      .then(({ data }) => setUsers(data))
-      .catch(() => { console.warn('Backend unavailable – using mock data'); setUsers(MOCK_USERS); })
-      .finally(() => setLoading(false));
-  }, []);
-
-  const filtered = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = usersService.filterBySearch(users, search);
 
   return (
     <div className="page">
@@ -41,10 +21,12 @@ export default function UsersPage() {
           <h1 className="page__title">User Management</h1>
           <p className="page__sub">Manage all system users, roles, and access permissions.</p>
         </div>
-        <button className="btn btn--primary">
-          <span className="material-symbols-outlined">person_add</span>
-          Invite User
-        </button>
+        {can('canCreateUser') && (
+          <button className="btn btn--primary">
+            <span className="material-symbols-outlined">person_add</span>
+            Invite User
+          </button>
+        )}
       </div>
 
       <div className="card">
@@ -86,7 +68,7 @@ export default function UsersPage() {
                   <tr key={u.id}>
                     <td>
                       <div className="user-cell">
-                        <div className="user-cell__avatar">{u.name[0]}</div>
+                        <div className="user-cell__avatar">{u.avatar}</div>
                         <div>
                           <div className="user-cell__name">{u.name}</div>
                           <div className="user-cell__email">{u.email}</div>
@@ -98,12 +80,16 @@ export default function UsersPage() {
                     <td className="table-sub">{u.lastLogin}</td>
                     <td>
                       <div className="table-actions">
-                        <button className="icon-btn" title="Edit">
-                          <span className="material-symbols-outlined">edit</span>
-                        </button>
-                        <button className="icon-btn icon-btn--danger" title="Delete">
-                          <span className="material-symbols-outlined">delete</span>
-                        </button>
+                        {can('canEditUser') && (
+                          <button className="icon-btn" title="Edit">
+                            <span className="material-symbols-outlined">edit</span>
+                          </button>
+                        )}
+                        {can('canDeleteUser') && (
+                          <button className="icon-btn icon-btn--danger" title="Delete" onClick={() => removeUser(u.id)}>
+                            <span className="material-symbols-outlined">delete</span>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -1,18 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import PrivateRoute    from './components/PrivateRoute';
-import RoleRoute       from './components/RoleRoute';
-import AppLayout       from './components/AppLayout';
-import LoginPage        from './pages/LoginPage';
-import DashboardPage    from './pages/DashboardPage';
-import UsersPage        from './pages/UsersPage';
-import ProfilePage      from './pages/ProfilePage';
-import UnauthorizedPage from './pages/UnauthorizedPage';
+import { AuthProvider }   from './modules/auth/auth.context';
+import PrivateRoute       from './components/PrivateRoute';
+import RoleRoute          from './components/RoleRoute';
+import AppLayout          from './components/AppLayout';
+import LoginPage          from './pages/LoginPage';
+import DashboardPage      from './pages/DashboardPage';
+import UsersPage          from './pages/UsersPage';
+import ProfilePage        from './pages/ProfilePage';
+import UnauthorizedPage   from './pages/UnauthorizedPage';
 
 export default function App() {
   return (
     <BrowserRouter>
-      {/* AuthProvider inside BrowserRouter so useNavigate works */}
       <AuthProvider>
         <Routes>
           {/* Public */}
@@ -27,12 +26,12 @@ export default function App() {
               <Route path="/profile" element={<ProfilePage />} />
 
               {/* admin + super_admin */}
-              <Route element={<RoleRoute allowedRoles={['admin', 'super_admin']} />}>
+              <Route element={<RoleRoute permission="canViewDashboard" />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
               </Route>
 
               {/* super_admin only */}
-              <Route element={<RoleRoute allowedRoles={['super_admin']} />}>
+              <Route element={<RoleRoute permission="canViewUsers" />}>
                 <Route path="/users" element={<UsersPage />} />
               </Route>
 

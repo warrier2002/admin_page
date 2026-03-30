@@ -4,7 +4,7 @@
  * Public route. Shown when a role-based check fails.
  */
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../modules/auth/auth.context';
 
 export default function UnauthorizedPage() {
   const navigate = useNavigate();

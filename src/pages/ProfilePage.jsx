@@ -1,21 +1,26 @@
-/**
- * ProfilePage.jsx
- * ─────────────────────────────────────────────────────────────────────────
- * Accessible to: all authenticated users
- * Displays user profile info and role-based capabilities.
- */
-import { useAuth } from '../context/AuthContext';
+import { useAuth }       from '../modules/auth/auth.context';
+import { usePermission } from '../core/rbac/usePermission';
+import { PERMISSIONS }   from '../core/rbac/permissions';
+
+// Derive displayed capabilities from the RBAC permissions map — no hardcoded lists
+const CAPABILITY_LABELS = {
+  canViewDashboard:  'View Dashboard',
+  canViewUsers:      'View Users',
+  canCreateUser:     'Create Users',
+  canEditUser:       'Edit Users',
+  canDeleteUser:     'Delete Users',
+  canInviteUser:     'Invite Users',
+  canViewProfile:    'Edit Profile',
+  canConfigureRoles: 'Configure Roles',
+  canViewAuditLogs:  'View Audit Logs',
+  canSystemSettings: 'System Settings',
+};
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+  const { can }         = usePermission();
 
-  const capabilities = {
-    super_admin: ['View Dashboard', 'Manage Users', 'Configure Roles', 'Audit Logs', 'System Settings', 'Delete Users'],
-    admin:       ['View Dashboard', 'View Users', 'Edit Profile', 'View Audit Logs'],
-    user:        ['Edit Profile', 'View Own Activity'],
-  };
-
-  const caps = capabilities[user?.role] || [];
+  const caps = Object.keys(CAPABILITY_LABELS).filter(can);
 
   return (
     <div className="page">
@@ -101,10 +106,10 @@ export default function ProfilePage() {
               <h2 className="card__title">Access Capabilities</h2>
             </div>
             <div className="caps-list">
-              {caps.map((cap) => (
-                <div key={cap} className="caps-item">
+              {caps.map((perm) => (
+                <div key={perm} className="caps-item">
                   <span className="material-symbols-outlined caps-item__icon">check_circle</span>
-                  {cap}
+                  {CAPABILITY_LABELS[perm]}
                 </div>
               ))}
             </div>

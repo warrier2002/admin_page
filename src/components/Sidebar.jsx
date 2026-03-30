@@ -1,14 +1,16 @@
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { NavLink }        from 'react-router-dom';
+import { useAuth }        from '../modules/auth/auth.context';
+import { usePermission }  from '../core/rbac/usePermission';
 
 const NAV = [
-  { to: '/dashboard', icon: 'dashboard',     label: 'Dashboard',       roles: ['super_admin', 'admin'] },
-  { to: '/users',     icon: 'group',          label: 'User Management', roles: ['super_admin'] },
-  { to: '/profile',   icon: 'account_circle', label: 'Profile',         roles: ['super_admin', 'admin', 'user'] },
+  { to: '/dashboard', icon: 'dashboard',     label: 'Dashboard',       permission: 'canViewDashboard' },
+  { to: '/users',     icon: 'group',          label: 'User Management', permission: 'canViewUsers'     },
+  { to: '/profile',   icon: 'account_circle', label: 'Profile',         permission: 'canViewProfile'   },
 ];
 
 export default function Sidebar() {
-  const { user, logout, hasRole } = useAuth();
+  const { user, logout }  = useAuth();
+  const { can }           = usePermission();
 
   return (
     <aside className="sidebar">
@@ -21,7 +23,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar__nav">
-        {NAV.filter((item) => hasRole(item.roles)).map((item) => (
+        {NAV.filter((item) => can(item.permission)).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
