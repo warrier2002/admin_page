@@ -49,7 +49,6 @@ export default function DashboardPage() {
         <div className="card">
           <div className="card__header">
             <h2 className="card__title">Audit Stream</h2>
-            <button className="btn btn--ghost btn--sm">View all</button>
           </div>
           <div className="audit-list">
             {events.map((e, i) => (
@@ -67,37 +66,7 @@ export default function DashboardPage() {
 
         {/* Quick actions */}
         <div className="card">
-          <div className="card__header">
-            <h2 className="card__title">Quick Actions</h2>
-          </div>
-          <div className="quick-actions">
-            {can('canInviteUser') && (
-              <button className="quick-action-btn">
-                <span className="material-symbols-outlined">person_add</span>
-                Add User
-              </button>
-            )}
-            {can('canConfigureRoles') && (
-              <button className="quick-action-btn">
-                <span className="material-symbols-outlined">security</span>
-                Configure Roles
-              </button>
-            )}
-            <button className="quick-action-btn">
-              <span className="material-symbols-outlined">history</span>
-              View Audit Logs
-            </button>
-            {can('canSystemSettings') && (
-              <button className="quick-action-btn">
-                <span className="material-symbols-outlined">settings</span>
-                System Settings
-              </button>
-            )}
-            <button className="quick-action-btn">
-              <span className="material-symbols-outlined">download</span>
-              Export Report
-            </button>
-          </div>
+          {/* Dummy quick actions removed */}
 
           {/* Role info card */}
           <div className="role-info-card">

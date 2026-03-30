@@ -24,11 +24,7 @@ export default function Navbar({ title = 'Dashboard' }) {
           <input placeholder="Search..." />
         </div>
 
-        {/* Notifications */}
-        <button className="navbar__icon-btn" aria-label="Notifications">
-          <span className="material-symbols-outlined">notifications</span>
-          <span className="navbar__badge">3</span>
-        </button>
+
 
         {/* User menu */}
         <div className="navbar__user-menu">
